@@ -1,7 +1,14 @@
 #include <stdint.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include <avr/wdt.h>
+#include <util/delay.h>
 
+#define PhaseA 5
+#define PhaseB 6
+
+const uint8_t Sine[]= {
 0x00,0x04,0x08,0x0D,0x11,0x16,0x1A,0x1F,0x23,0x27,
 0x2C,0x30,0x35,0x39,0x3D,0x41,0x46,0x4A,0x4E,0x53,
 0x57,0x5B,0x5F,0x63,0x67,0x6B,0x6F,0x73,0x77,0x7B,
@@ -21,20 +28,33 @@
 0x57,0x53,0x4E,0x4A,0x46,0x41,0x3D,0x39,0x35,0x30,
 0x2C,0x27,0x23,0x1F,0x1A,0x16,0x11,0x0D,0x08,0x04,
 0x00
-
+};
 
 
 void setup() {
-	wdt_disable();
-	
-	Serial.begin(9600);
-	pinMode(PhaseA,OUTPUT);
-	pinMode(PhaseB,OUTPUT);
-	pinMode(PhaseC,OUTPUT);
-	
-	wdt_enable(WDTO_4S);
+  wdt_disable();
+  
+  Serial.begin(9600);
+  pinMode(PhaseA,OUTPUT);
+  pinMode(PhaseB,OUTPUT);
+  //pinMode(PhaseC,OUTPUT);
+  
+  //wdt_enable(WDTO_4S);
 }
 void loop() {
-	delay(1);
-	wdt_reset();
+  for(int x=0;x<=180;x++){
+    analogWrite(PhaseA,Sine[x]);
+    
+    delayMicroseconds(50);
+  }
+  digitalWrite(PhaseA,0);
+  
+  for(int x=0;x<=180;x++){
+    analogWrite(PhaseB,Sine[x]);
+    delayMicroseconds(50);
+  }
+  digitalWrite(PhaseB,0);
+  
+  
+  //wdt_reset();
 }
